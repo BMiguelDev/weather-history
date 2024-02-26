@@ -6,25 +6,31 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Bar } from "react-chartjs-2";
 
 import { Coordinates, LocationItem, WeatherEntry } from "../../models/model";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import Button from "../Button/Button";
 import styles from "./WeatherHistory.module.scss";
 
+const LOCAL_STORAGE_INPUT_VALUE_KEY = "WeatherHistory.inputValue";
+const LOCAL_STORAGE_START_DATE_KEY = "WeatherHistory.startDate";
+const LOCAL_STORAGE_END_DATE_KEY = "WeatherHistory.endDate";
+const LOCAL_STORAGE_COORDINATES_KEY = "WeatherHistory.coordinates";
+const LOCAL_STORAGE_WEATHER_ENTRIES_KEY = "WeatherHistory.weatherEntries";
 const DEBOUNCE_TIME = 300;
 const TIME_INTERVAL_DAYS = 7;
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const WeatherHistory = () => {
-    const [weatherEntries, setWeatherEntries] = useState<WeatherEntry[]>([]);
+    const [weatherEntries, setWeatherEntries] = useLocalStorage<WeatherEntry[]>(LOCAL_STORAGE_WEATHER_ENTRIES_KEY, []);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingCoordinates, setIsLoadingCoordinates] = useState<boolean>(false);
 
-    const [startDate, setStartDate] = useState<string | undefined>("");
-    const [endDate, setEndDate] = useState<string | undefined>("");
+    const [startDate, setStartDate] = useLocalStorage<string | undefined>(LOCAL_STORAGE_START_DATE_KEY, "");
+    const [endDate, setEndDate] = useLocalStorage<string | undefined>(LOCAL_STORAGE_END_DATE_KEY, "");
 
-    const [inputValue, setInputValue] = useState<string>("");
-    const [inputCoordinates, setInputCoordinates] = useState<Coordinates>({
+    const [inputValue, setInputValue] = useLocalStorage<string>(LOCAL_STORAGE_INPUT_VALUE_KEY, "");
+    const [inputCoordinates, setInputCoordinates] = useLocalStorage<Coordinates>(LOCAL_STORAGE_COORDINATES_KEY, {
         latitude: "",
         longitude: "",
     });
