@@ -15,6 +15,7 @@ const LOCAL_STORAGE_START_DATE_KEY = "WeatherHistory.startDate";
 const LOCAL_STORAGE_END_DATE_KEY = "WeatherHistory.endDate";
 const LOCAL_STORAGE_COORDINATES_KEY = "WeatherHistory.coordinates";
 const LOCAL_STORAGE_WEATHER_ENTRIES_KEY = "WeatherHistory.weatherEntries";
+const LOCAL_STORAGE_LOCATION_SUGGESTIONS_KEY = "WeatherHistory.locationSuggestions";
 const DEBOUNCE_TIME = 300;
 const TIME_INTERVAL_DAYS = 7;
 
@@ -29,14 +30,40 @@ const WeatherHistory = () => {
     const [startDate, setStartDate] = useLocalStorage<string | undefined>(LOCAL_STORAGE_START_DATE_KEY, "");
     const [endDate, setEndDate] = useLocalStorage<string | undefined>(LOCAL_STORAGE_END_DATE_KEY, "");
 
+    const [locationSuggestions, setLocationSuggestions] = useLocalStorage<LocationItem[]>(
+        LOCAL_STORAGE_LOCATION_SUGGESTIONS_KEY,
+        []
+    );
+
+    const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+
     const [inputValue, setInputValue] = useLocalStorage<string>(LOCAL_STORAGE_INPUT_VALUE_KEY, "");
     const [inputCoordinates, setInputCoordinates] = useLocalStorage<Coordinates>(LOCAL_STORAGE_COORDINATES_KEY, {
         latitude: "",
         longitude: "",
+        name: "",
+        country: "",
+        district: "",
     });
 
     const inputRef = useRef<HTMLInputElement>(null);
-    const isFormSubmittable = inputValue && startDate && endDate && inputCoordinates.latitude && inputCoordinates.longitude;
+    const inputContainerRef = useRef<HTMLDivElement>(null);
+    const isFormSubmittable =
+        inputValue && startDate && endDate && inputCoordinates.latitude && inputCoordinates.longitude;
+
+    useEffect(() => {
+        const checkClickToHideLocationSuggestions = (event: any) => {
+            if (inputContainerRef.current && !inputContainerRef.current?.contains(event.target)) {
+                setIsInputFocused(false);
+            }
+        };
+
+        window.addEventListener("click", checkClickToHideLocationSuggestions);
+
+        return () => {
+            window.removeEventListener("click", checkClickToHideLocationSuggestions);
+        };
+    }, []);
 
     // When <inputValue> changes, query Meteo API for an array of locations (including latitude and longitude) correspondent to the location string inputed
     useEffect(() => {
@@ -46,7 +73,11 @@ const WeatherHistory = () => {
             setInputCoordinates({
                 latitude: "",
                 longitude: "",
+                name: "",
+                country: "",
+                district: "",
             });
+            setLocationSuggestions([]);
             setIsLoadingCoordinates(false);
             return;
         }
@@ -64,14 +95,22 @@ const WeatherHistory = () => {
                     setInputCoordinates({
                         latitude: locations[0].latitude.toString(),
                         longitude: locations[0].longitude.toString(),
+                        name: locations[0].name,
+                        country: locations[0].country,
+                        district: locations[0].admin1,
                     });
+                    setLocationSuggestions(locations);
                     console.log(locations);
                 } else {
                     console.log("No locations found");
                     setInputCoordinates({
                         latitude: "",
                         longitude: "",
+                        name: "",
+                        country: "",
+                        district: "",
                     });
+                    setLocationSuggestions([]);
                 }
             } catch (err) {
                 console.log("Error retrieving coordinates from Geocoding API");
@@ -79,7 +118,11 @@ const WeatherHistory = () => {
                 setInputCoordinates({
                     latitude: "",
                     longitude: "",
+                    name: "",
+                    country: "",
+                    district: "",
                 });
+                setLocationSuggestions([]);
             } finally {
                 setIsLoadingCoordinates(false);
             }
@@ -87,10 +130,10 @@ const WeatherHistory = () => {
 
         // When a new "useEffect" call happens, clear the timeout so that the API request is cancelled
         return () => clearTimeout(getCoordinates);
-    }, [inputValue, setInputCoordinates]);
+    }, [inputValue, setInputCoordinates, setLocationSuggestions]);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
+        event?.preventDefault();
         if (!isFormSubmittable) return;
 
         setIsLoading(true);
@@ -131,6 +174,25 @@ const WeatherHistory = () => {
         if (Math.abs(newStartDate.diff(endDate, "day")) > TIME_INTERVAL_DAYS) {
             setEndDate(newStartDate.add(TIME_INTERVAL_DAYS, "day").format("YYYY-MM-DD"));
         }
+    };
+
+    const handleClickLocation = (
+        latitude: string,
+        longitiude: string,
+        name: string,
+        country: string,
+        district?: string
+    ) => {
+        setInputCoordinates({
+            latitude: latitude,
+            longitude: longitiude,
+            name: name,
+            country: country,
+            district: district,
+        });
+
+        handleSubmit();
+        setIsInputFocused(false);
     };
 
     const backgroundColors = ["rgb(43, 105, 134)", "rgb(16, 41, 51)", "rgb(14, 100, 139)", "rgb(23, 174, 244)"];
@@ -176,7 +238,7 @@ const WeatherHistory = () => {
         plugins: {
             title: {
                 display: true,
-                text: inputValue,
+                text: `${inputCoordinates.name}, ${inputCoordinates.country}, ${inputCoordinates.district}`,
                 padding: {
                     bottom: 10,
                 },
@@ -198,7 +260,7 @@ const WeatherHistory = () => {
     return (
         <main className={styles.main_container}>
             <form onSubmit={handleSubmit} className={styles.form_container}>
-                <div className={styles.input_container}>
+                <div ref={inputContainerRef} className={styles.input_container}>
                     <label htmlFor="inputValue">Location:</label>
                     <div>
                         <input
@@ -210,8 +272,45 @@ const WeatherHistory = () => {
                             onChange={handleInputChange}
                             maxLength={50}
                             placeholder="Lisbon..."
+                            onFocus={() => setIsInputFocused(true)}
                         />
                     </div>
+
+                    {locationSuggestions.length > 0 && isInputFocused ? (
+                        <div className={styles.location_suggestions_container}>
+                            {isLoadingCoordinates ? (
+                                <h4>Loading...</h4>
+                            ) : (
+                                <ul>
+                                    {locationSuggestions.map((locationSuggestion) => (
+                                        <li
+                                            key={locationSuggestion.id}
+                                            onClick={() =>
+                                                handleClickLocation(
+                                                    locationSuggestion.latitude.toString(),
+                                                    locationSuggestion.longitude.toString(),
+                                                    locationSuggestion.name,
+                                                    locationSuggestion.country,
+                                                    locationSuggestion.admin1
+                                                )
+                                            }
+                                        >
+                                            <span>{locationSuggestion.name}</span>
+                                            <span>{locationSuggestion.country}</span>
+                                            <span>{locationSuggestion.admin1}</span>
+                                            <img
+                                                src={`https://flagsapi.com/${locationSuggestion.country_code}/flat/64.png`}
+                                                alt="Flag"
+                                                style={{ width: "21px", height: "21px" }}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    ) : (
+                        ""
+                    )}
                 </div>
                 <div className={styles.date_inputs_container}>
                     <div className={styles.start_date_container}>
