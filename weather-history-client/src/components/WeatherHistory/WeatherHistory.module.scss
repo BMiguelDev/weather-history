@@ -1,12 +1,68 @@
 // Product Viewer main content
 main.main_container {
-    height: 75vh;
-    margin: 1% 3%;
-    // border: .1rem solid var(--app-text-support-color);
-    // border-radius: 1.5rem;
+    height: 80vh;
+    margin: 0% 2%;
     padding: 1rem;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: flex-start;
-    // gap: 1rem;
+    gap: 2rem;
+
+    .form_container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: .5rem;
+        align-items: center;
+
+        .input_container {
+            flex: 3;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: .25rem;
+
+            input {
+                font-family: "Nunito", sans-serif;
+                font-size: 1.15rem;
+                box-shadow: 0 0 0.15rem 0.04rem var(--app-text-support-color);
+                color: var(--footer-bg-color);
+                background-color: var(--app-primary-color-variation-4);
+                border: none;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.5rem;
+                margin-bottom: .75rem;
+                width: 100%;
+
+                &:focus {
+                    outline: 0.1rem solid var(--app-primary-color);
+                    box-shadow: 0 0 0.25rem 0.1rem var(--app-intermediate-color);
+                }
+            }
+        }
+
+        .date_inputs_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            gap: .25rem;
+            flex: 3;
+        }
+
+        .button_container {
+            flex: .5;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .chart_container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-height: 80%;
+
+    }
 }

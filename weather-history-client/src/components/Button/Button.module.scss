@@ -1,0 +1,36 @@
+// Button content
+.button_container {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.775rem;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: var(--app-intermediate-color);
+    color: black;
+    border-radius: 2rem;
+    letter-spacing: 0.025rem;
+    transition: all 0.1s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.45rem;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+
+    &.button_container_disabled {
+        background-color: var(--app-secondary-color) !important;
+        cursor: not-allowed;
+    }
+
+    &:not(.button_container_disabled) {
+
+        &:hover {
+            transform: translateY(-10%);
+        }
+
+        &:active {
+            background-color: var(--app-special-color) !important;
+        }
+    }
+}

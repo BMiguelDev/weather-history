@@ -17,3 +17,14 @@ export interface LocationItem {
     name: string;
     timezone?: string;
 }
+
+export interface WeatherEntry {
+    id?: number;
+    latitude: string;
+    longitude: string;
+    date: string;
+    max_temp: string;
+    min_temp: string;
+    precipitation: string;
+    wind_speed: string;
+}
