@@ -1,0 +1,2 @@
+class WeatherEntry < ApplicationRecord
+end
