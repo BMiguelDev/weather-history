@@ -1,7 +1,16 @@
 class Api::WeatherEntriesController < ApplicationController
     def index
-        @weather_entries = WeatherEntry.all
-        render json: @weather_entries, status: :ok
+
+        if params[:latitude] && params[:longitude] && params[:start_date] && params[:end_date]
+
+            @weather_entry = WeatherEntry.where("latitude = ? AND longitude = ? AND date BETWEEN ? AND ?", params[:latitude], params[:longitude], params[:start_date], params[:end_date])
+            render json: @weather_entry, status: :ok
+
+        else 
+            # @weather_entries = WeatherEntry.all
+            # render json: @weather_entries, status: :ok
+            render json: { error: "Incorrect query parameters" }, status: 422
+        end
     end
 
     def create
