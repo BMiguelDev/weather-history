@@ -25,6 +25,10 @@ body {
     --footer-color: rgb(231, 235, 235);
     --app-text-support-color: rgb(31, 30, 30);
     --app-primary-color: rgb(43, 105, 134);
+    --app-primary-color-variation-1: rgb(16, 41, 51);
+    --app-primary-color-variation-2: rgb(14, 100, 139);
+    --app-primary-color-variation-3: rgb(23, 174, 244);
+    --app-primary-color-variation-4: rgb(162, 208, 230);
     --app-secondary-color: rgba(104, 120, 100, 1);
     --app-intermediate-color: rgb(38, 136, 188);
     --app-special-color: rgb(150, 210, 195);
@@ -35,6 +39,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 2rem;
+    gap: 1rem;
     background-color: var(--app-bg-color);
 }
