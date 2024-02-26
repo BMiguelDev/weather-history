@@ -26,11 +26,7 @@ const WeatherHistory = () => {
     });
 
     const inputRef = useRef<HTMLInputElement>(null);
-
-    // useEffect(() => {
-    //     if (inputValue === "" && inputRef.current) inputRef.current.focus(); // Focus on text input as soon as component mounts, if input value is still empty
-    // }, [inputValue]);
-
+    const isFormSubmittable = inputValue && startDate && endDate;
 
     // When <inputValue> changes, query Meteo API for an array of locations (including latitude and longitude) correspondent to the location string inputed
     useEffect(() => {
@@ -90,7 +86,7 @@ const WeatherHistory = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!inputValue) return;
+        if (!inputValue || !startDate || !endDate) return;
 
         setIsLoading(true)
 
@@ -160,12 +156,11 @@ const WeatherHistory = () => {
                 <DatePicker
                     label="End Date"
                     value={dayjs(endDate)}
-                    // onChange={(e) => handleChangeDate(e, "end")}
                     onChange={(e) => setEndDate(e?.format("YYYY-MM-DD"))}
                     minDate={startDate ? dayjs(startDate) : dayjs("1940-01-01")}
                     maxDate={dayjs(startDate).add(TIME_INTERVAL_DAYS, "day")}
                 />
-                <button type="submit">
+                <button type="submit" disabled={!isFormSubmittable}>
                     {isLoadingCoordinates ? "Loading..." : "Submit"}
                 </button>
             </form>
