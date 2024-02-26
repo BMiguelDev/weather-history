@@ -1,0 +1,22 @@
+// Footer container
+footer.footer_container {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    // height: min(4.5%, 30px);
+    background-color: var(--footer-bg-color);
+    color: var(--footer-color);
+    border-top-left-radius: .1rem;
+    border-top-right-radius: .1rem;
+    padding: .5rem 1.5rem;
+    padding-left: 1rem;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+
+    p {
+        font-size: .8rem;
+        margin: 0;
+    }
+}

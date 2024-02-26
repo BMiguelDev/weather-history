@@ -1,0 +1,40 @@
+// Font imports
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+
+// General page content
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+}
+
+
+// Variables
+:root {
+    --app-bg-color: rgb(228, 232, 233);
+    --footer-bg-color: rgb(18, 18, 18);
+    --footer-color: rgb(231, 235, 235);
+    --app-text-support-color: rgb(31, 30, 30);
+    --app-primary-color: rgb(43, 105, 134);
+    --app-secondary-color: rgba(104, 120, 100, 1);
+    --app-intermediate-color: rgb(38, 136, 188);
+    --app-special-color: rgb(150, 210, 195);
+}
+
+// App content
+.app_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 2rem;
+    background-color: var(--app-bg-color);
+}
