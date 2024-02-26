@@ -11,7 +11,7 @@
 - Run command "rails s -p 3001" to start the server
 - It's now possible to run the "weather-history-client" frontend project and make calls to this backend
 
-## Skills shown in this project:
+## Aspects shown in this project:
 - Ruby, Ruby on Rails
 - Model View Controller (MVC) architectural pattern
 - Gitflow Workflow
