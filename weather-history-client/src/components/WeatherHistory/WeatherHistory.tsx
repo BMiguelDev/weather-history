@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import axios, { AxiosError } from "axios";
+import dayjs from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 
-import styles from "./WeatherHistory.module.scss";
 import { Coordinates, LocationItem } from "../../models/model";
+import styles from "./WeatherHistory.module.scss";
 
 const DEBOUNCE_TIME = 300;
+const TIME_INTERVAL_DAYS = 7;
 
 const WeatherHistory = () => {
     const [data, setData] = useState<any>([]);
@@ -12,6 +15,9 @@ const WeatherHistory = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingCoordinates, setIsLoadingCoordinates] = useState<boolean>(false);
+
+    const [startDate, setStartDate] = useState<string | undefined>("");
+    const [endDate, setEndDate] = useState<string | undefined>("");
 
     const [inputValue, setInputValue] = useState<string>("");
     const [inputCoordinates, setInputCoordinates] = useState<Coordinates>({
@@ -90,7 +96,7 @@ const WeatherHistory = () => {
 
         try {
             const response = await axios.get(
-                `http://localhost:3001/api/weather_entries?latitude=${inputCoordinates.latitude}&longitude=${inputCoordinates.longitude}&start_date=2000-12-13&end_date=2000-12-14`
+                `http://localhost:3001/api/weather_entries?latitude=${inputCoordinates.latitude}&longitude=${inputCoordinates.longitude}&start_date=${startDate}&end_date=${endDate}`
             );
             console.log(response.data);
             setData(response.data);
@@ -113,6 +119,19 @@ const WeatherHistory = () => {
         if (event.target.value.match(validInputRegex)) setInputValue(event.target.value);
     };
 
+    const handleChangeStartDate = (event: dayjs.Dayjs | null) => {
+        if (!event) return;
+
+        const newStartDate = event;
+        const newStartDateString = newStartDate.format("YYYY-MM-DD");
+        setStartDate(newStartDateString);
+
+        // If new start date is more than <TIME_INTERVAL_DAYS> days away from the end date, set end date to the maximum allowed date
+        if (Math.abs(newStartDate.diff(endDate, "day")) > TIME_INTERVAL_DAYS) {
+            setEndDate(newStartDate.add(TIME_INTERVAL_DAYS, "day").format("YYYY-MM-DD"));
+        }
+    };
+
     return (
         <main className={styles.main_container}>
             <form onSubmit={handleSubmit}>
@@ -131,6 +150,21 @@ const WeatherHistory = () => {
                         />
                     </div>
                 </div>
+                <DatePicker
+                    label="Start Date"
+                    value={dayjs(startDate)}
+                    onChange={(e) => handleChangeStartDate(e)}
+                    minDate={dayjs("1940-01-01")}
+                    maxDate={dayjs(endDate)}
+                />
+                <DatePicker
+                    label="End Date"
+                    value={dayjs(endDate)}
+                    // onChange={(e) => handleChangeDate(e, "end")}
+                    onChange={(e) => setEndDate(e?.format("YYYY-MM-DD"))}
+                    minDate={startDate ? dayjs(startDate) : dayjs("1940-01-01")}
+                    maxDate={dayjs(startDate).add(TIME_INTERVAL_DAYS, "day")}
+                />
                 <button type="submit">
                     {isLoadingCoordinates ? "Loading..." : "Submit"}
                 </button>

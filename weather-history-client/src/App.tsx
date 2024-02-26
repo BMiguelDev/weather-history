@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
@@ -23,11 +25,13 @@ const App = () => {
     }, []);
 
     return (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div ref={appContainerRef} className="app_container">
                 <Navbar />
                 <WeatherHistory />
                 <Footer />
             </div>
+        </LocalizationProvider>
     );
 };
 
