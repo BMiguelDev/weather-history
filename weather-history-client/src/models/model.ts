@@ -1,6 +1,9 @@
 export interface Coordinates {
     latitude: string;
     longitude: string;
+    name: string;
+    country: string;
+    district?: string;
 }
 
 export interface LocationItem {
